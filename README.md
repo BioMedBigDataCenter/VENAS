@@ -78,3 +78,8 @@ python main_path.py
 The result net.csv and nodeTable.csv files are in the current working directory. You can visualize the result viral genome evolution network using a general relationship graph or force-directed graph tools, such as the web-based Apache Echarts (<https://echarts.apache.org/>), d3.js (<https://d3js.org/>), or the application-based Gephi (recommend).
 The net.csv contains all the edges in the evolution network. The edgeTable.csv file contains the major transmission paths of the evolution network. The nodes with value 1000 in the nodeTable.csv file represent the main nodes on the major transmission paths.
 
+## Publication
+
+## About Us
+
+Bio-Med Big Data Center, CAS Key Laboratory of Computational Biology, CAS-MPG Partner Institute for Computational Biology, Shanghai Institute of Nutrition and Health, Chinese Academy of Sciences
