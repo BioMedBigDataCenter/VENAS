@@ -52,7 +52,7 @@ def process(G,coms,mode="big"):
     G_smaller=G.copy()
     removeNode=[]
     if mode=="big":
-        for node in G.node():
+        for node in G.nodes():
             if deg[node] ==1:
                 removeNode.append(node)
     for node in removeNode:
@@ -60,9 +60,9 @@ def process(G,coms,mode="big"):
 
     filterNode={}
     if mode=="small":
-        threshold = math.log(len(G.node()))*2
+        threshold = math.log(len(G.nodes()))*2
     else:
-        threshold = len(G_smaller.node())/float(len(coms.communities))
+        threshold = len(G_smaller.nodes())/float(len(coms.communities))
     '''
     for node in keyNode.keys():
         if keyNode[node] > threshold:
@@ -75,7 +75,7 @@ def process(G,coms,mode="big"):
     #    if deg[node]>threshold:
     #        filterNode[node]=comLengthCount[node]
 
-    print(len(filterNode.keys()))
+    #print(len(filterNode.keys()))
     #check dijkstra_path
     mainPath={}
     for nodestart in filterNode.keys():
@@ -115,91 +115,6 @@ def process(G,coms,mode="big"):
                 j=j+1
     f.close()
     return return_Path,filterNode,keyNodeList
-
-
-#def createGephiNodeCSV(coms,rPath,keyNodeList,filterNode,G):
-#    i=0
-#    prDict={}
-#    originDict={}
-#    for node in list(G.node):
-#        prDict[node]=-3
-#    for com in coms.communities:
-#        for node in com:
-#            prDict[node]=i
-#            originDict[node]=i
-#        i=i+1
-#    transNode=[]
-#    for p in rPath.keys():
-#        if len(rPath[p]) >2:
-#            for node in rPath[p]:
-#                if (node!=rPath[p][0] and node!=rPath[p][-1]):
-#                    thisCom=prDict[node]
-#                    if len(coms.communities[thisCom])>1:
-#                        if node not in keyNodeList:
-#                            transNode.append(node)
-#                            #print(node)
-#                            prDict[node]=i
-#                            i=i+1
-#    for tnode in transNode:
-#        thisCom = originDict[tnode]
-#        for node in coms.communities[thisCom]:
-#            if node != tnode:
-#                toKnodePath=nx.dijkstra_path(G,node,keyNodeList[thisCom])
-#                if tnode  in toKnodePath:
-#                    prDict[node]=prDict[tnode]
-#    #process node not in filterNode but in keynode
-#    #assign the sam com num direct link to it
-#    small_node=[]
-#    for node in keyNodeList:
-#        if node not in filterNode.keys():
-#            if node not in transNode:
-#                small_node.append(node)
-#                print(node)
-#                
-#    small_node_color={}          
-#    for node in small_node:
-#        flag=0
-#        for nbr in G[node]:
-#            if nbr in filterNode.keys():
-#                small_node_color[node]=originDict[nbr]
-#                #print(node,nbr)
-#                flag=1
-#                break
-#        if flag==0:
-#            small_node_color[node]=-1
-#    for node in small_node_color.keys():
-#        if small_node_color[node]==-1:
-#            min_len=len(G.node)
-#            nearest_fnode=0
-#            for fNode in filterNode.keys():
-#                toFnodePath = nx.dijkstra_path(G,node,fNode)
-#                if (len(toFnodePath)<min_len):
-#                    min_len=len(toFnodePath)
-#                    nearest_fnode=fNode
-#            small_node_color[node]=originDict[nearest_fnode]
-#    for node in small_node_color.keys():
-#        thisCom=coms.communities[originDict[node]]
-#        for thisComNode in thisCom:
-#            prDict[thisComNode]=small_node_color[node]
-#
-#    mainPathNode=set()
-#    for eachPath in rPath.keys():
-#        item = rPath[eachPath]
-#        for node in item:
-#            mainPathNode.add(node)
-#    valueDict={}
-#    #valueDict.keys()=list(G.node)
-#    for node in list(G.node):
-#        if node not in mainPathNode:
-#            valueDict[node]=0
-#        else:
-#            valueDict[node]=1000
-#    
-#    f=open("nodeTable.csv","w")
-#    f.write("Id,Label,ClusterId,Value\n")
-#    for node in prDict.keys():
-#        f.write(str(node)+","+str(node)+","+str(prDict[node])+","+str(valueDict[node])+"\n")
-#    f.close()
 
 def createGephiNodeCSV(coms,rPath,keyNodeList,filterNode,G):
     i=0
