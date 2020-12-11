@@ -30,23 +30,30 @@ This section presents some basic usages of VENAS. We assume here that all the sc
 4.	In the default parameters, all sequences with any ePIS containing bases other than "A,T,C,G" will be removed and output to the “rm_non-ATCG_genomes.ma”.
 *Note:* The i parameter is the directory where the input file is located. The f parameter is the reference genome sequence id in the ma file.
 
-```#!bash
+```
+#!bash
 
-python -u parsimony-informative.py -i example_data -m variation_graph_taxonid_2697049_outgroupid_none.ma -b none -r 0 -f "OEAV139851"```
+python -u parsimony-informative.py -i example_data -m variation_graph_taxonid_2697049_outgroupid_none.ma -b none -r 0 -f "OEAV139851"
+```
 
 ### Part 2: Viral genome evolution network construction
 
-```#!bash
+```
+#!bash
 
-python -u haplotype_network.py example_data```
+python -u haplotype_network.py example_data
+```
 
 ### Part3: Topological classification and major path recognition
 
 *Note:* Only the first two columns are needed in the output “net_all.txt” file of the Part 2 step, which can be handled as described below.
-```#!bash
+```
+#!bash
 awk -F'\t' '{print $1","$2}' example_data/net_all.txt > net.csv
-sed -i '1i\Source,Target' net.csv```
+sed -i '1i\Source,Target' net.csv
+```
 Example input net_all.csv:
+
 ```
 Source,Target
 1,57
@@ -56,13 +63,16 @@ Source,Target
 10,59
 10,69
 3,191
-10,91```
+10,91
+```
 
 If you have already processed the net.csv file, you are ready for Part 3.
 
-```#!bash
+```
+#!bash
 
-python main_path.py```
+python main_path.py
+```
 
 The result net.csv and nodeTable.csv files are in the current working directory. You can visualize the result viral genome evolution network using a general relationship graph or force-directed graph tools, such as the web-based Apache Echarts (<https://echarts.apache.org/>), d3.js (<https://d3js.org/>), or the application-based Gephi (recommend).
 The net.csv contains all the edges in the evolution network. The edgeTable.csv file contains the major transmission paths of the evolution network. The nodes with value 1000 in the nodeTable.csv file represent the main nodes on the major transmission paths.
