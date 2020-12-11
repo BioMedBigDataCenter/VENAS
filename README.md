@@ -53,7 +53,7 @@ python -u haplotype_network.py example_data
 awk -F'\t' '{print $1","$2}' example_data/net_all.txt > net.csv
 sed -i '1i\Source,Target' net.csv
 ```
-Example input net_all.csv:
+Example input net.csv:
 
 ```
 Source,Target
