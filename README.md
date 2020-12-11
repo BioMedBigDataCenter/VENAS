@@ -1,4 +1,4 @@
-# VENUS：a Viral genome Evolution Network Analysis System
+# VENAS：a Viral genome Evolution Network Analysis System
 
 ## Introduction
 
@@ -10,7 +10,6 @@ VENAS can construct the network from an alignment file containing 10k sequences 
 * Use Hamming distances adjusted by the minor allele frequency to construct the viral genome evolution network, enhancing network construction's robustness.
 * Use a community detection method to transform the evolution network into a two-dimensional isomorphic topological space, and apply a network disassortativity trimming algorithm to extract the backbone network of the topological space, which can be used to trace the evolution of viruses and detect core mutations among distinct strains.
 * Taking advantage of the multi-core and multi-threaded features in high-performance computers and developed a highly parallel network construction pipeline, which could handle a massive amount of viral genome in a limited time.
-* Tracing the viral evolution network through different transmission stages, revealing several transmission branches and mutation "hot-spots" of SARS-CoV-2.
 
 ## Pre-requisites
 VENAS requires python 3 with PyPy, argparse, pandas, numpy (<http://www.numpy.org/>), networkx, CDlib, matplotlib, biopython (<http://biopython.org/wiki/Main_Page>), click, tqdm libraries installed.
@@ -46,7 +45,7 @@ python -u parsimony-informative.py -i example_data -m variation_graph_taxonid_26
 python -u haplotype_network.py example_data
 ```
 
-### Part3: Topological classification and major path recognition
+### Part 3: Topological classification and major path recognition
 
 **Note:** Only the first two columns are needed in the output “net_all.txt” file of the Part 2 step, which can be handled as described below.
 ```
@@ -68,7 +67,7 @@ Source,Target
 10,91
 ```
 
-If you have already processed the net.csv file, you are ready for Part 3.
+If you have already processed the net.csv file, you are ready for **Part 3**.
 
 ```
 #!bash
