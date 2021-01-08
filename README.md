@@ -47,7 +47,7 @@ python -u haplotype_network.py example_data
 
 ### Part 3: Topological classification and major path recognition
 
-**Note:** Only the first two columns are needed in the output “net_all.txt” file of the Part 2 step, which can be handled as described below.
+**Note:** Only the first two columns are needed in the output “net_all.txt” file of the **Part 2** step, which can be handled as described below.
 ```
 #!bash
 awk -F'\t' '{print $1","$2}' example_data/net_all.txt > net.csv
@@ -78,7 +78,7 @@ The result net.csv and nodeTable.csv files are in the current working directory.
 The net.csv contains all the edges in the evolution network. The edgeTable.csv file contains the major transmission paths of the evolution network. The nodes with value 1000 in the nodeTable.csv file represent the main nodes on the major transmission paths.
 
 ## Publication
-
+* An interactive viral genome evolution network analysis system enabling rapid large-scale molecular tracing of SARS-CoV-2(<https://www.biorxiv.org/content/10.1101/2020.12.09.417121v1>)
 ## About Us
 
 Bio-Med Big Data Center, CAS Key Laboratory of Computational Biology, CAS-MPG Partner Institute for Computational Biology, Shanghai Institute of Nutrition and Health, Chinese Academy of Sciences
