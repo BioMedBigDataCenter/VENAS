@@ -71,7 +71,7 @@ If you have already processed the net.csv file, you are ready for **Part 3**.
 
 ```
 #!bash
-python main_path.py
+python main_path_example.py
 ```
 
 The result net.csv and nodeTable.csv files are in the current working directory. You can visualize the result viral genome evolution network using a general relationship graph or force-directed graph tools, such as the web-based Apache Echarts (<https://echarts.apache.org/>), d3.js (<https://d3js.org/>), or the application-based Gephi (recommend).
