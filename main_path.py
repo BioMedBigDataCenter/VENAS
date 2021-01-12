@@ -175,7 +175,7 @@ def createGephiNodeCSV(coms,rPath,keyNodeList,filterNode,G):
             small_node_color[node]=-1
     for node in small_node_color.keys():
         if small_node_color[node]==-1:
-            min_len=len(G.node)
+            min_len=len(G.nodes())
             nearest_fnode=0
             for fNode in filterNode.keys():
                 toFnodePath = nx.dijkstra_path(G,node,fNode)
