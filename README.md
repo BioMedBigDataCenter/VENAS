@@ -12,7 +12,7 @@ VENAS can construct the network from an alignment file containing 10k sequences 
 * Taking advantage of the multi-core and multi-threaded features in high-performance computers and developed a highly parallel network construction pipeline, which could handle a massive amount of viral genome in a limited time.
 
 ## Pre-requisites
-VENAS requires python 3 with PyPy, argparse, pandas, numpy (<http://www.numpy.org/>), networkx, CDlib, matplotlib, biopython (<http://biopython.org/wiki/Main_Page>), click, tqdm libraries installed.
+VENAS requires python 3 with PyPy, argparse, pandas, numpy (<http://www.numpy.org/>), networkx(version=2.5), CDlib, matplotlib, biopython (<http://biopython.org/wiki/Main_Page>), click, tqdm libraries installed.
 If you want to provide a fasta file as input file, VENAS also needs the MAFFT (<https://mafft.cbrc.jp/alignment/software/>) in the executable path. Then you can use the “multi_mafft.py” to perform a multi-threaded multiple sequence alignment.
 
 ## Installation
