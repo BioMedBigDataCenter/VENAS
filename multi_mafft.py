@@ -25,12 +25,14 @@ def multi_mafft(fasta_file: str, ref_id: str, out_dir: str):
         shutil.rmtree(out_dir)
     os.mkdir(out_dir)
 
-    print("拆分出MAFFT输入文件")
+    # print("拆分出MAFFT输入文件")
+    print("Split out the MAFFT input file ")
     mafft_input_dir = os.path.join(out_dir, "mafft_input")
     os.mkdir(mafft_input_dir)
     gen_mafft_input(fasta_file, ref_id, mafft_input_dir)
 
-    print("执行多进程并行MAFFT")
+    # print("执行多进程并行MAFFT")
+    print("Perform multi-process parallel MAFFT ")
     mafft_output_dir = os.path.join(out_dir, "mafft_output")
     os.mkdir(mafft_output_dir)
     p = multiprocessing.Pool(multiprocessing.cpu_count())
@@ -42,7 +44,8 @@ def multi_mafft(fasta_file: str, ref_id: str, out_dir: str):
     p.close()
     p.join()
 
-    print("合并为比对完成的MA文件")
+    # print("合并为比对完成的MA文件")
+    print("Merge into a matched MA file ")
     ma_file_name = os.path.basename(fasta_file)
     ma_file_name = ma_file_name[:ma_file_name.rindex(".")] + ".ma"
     seqrecords = []
@@ -54,7 +57,8 @@ def multi_mafft(fasta_file: str, ref_id: str, out_dir: str):
             seqrecords.append(seqrecord)
     SeqIO.write(seqrecords, os.path.join(out_dir, ma_file_name), "fasta")
 
-    print("删除中间临时文件")
+    # print("删除中间临时文件")
+    print("Delete intermediate temporary files")
     shutil.rmtree(mafft_input_dir)
     shutil.rmtree(mafft_output_dir)
 
@@ -68,7 +72,8 @@ def gen_mafft_input(fasta_file: str, ref_id: str, mafft_input_dir: str):
             break
 
     if ref_seqrecord is None:
-        print("Fasta文件中不包含reference: %s, 程序退出" % ref_id)
+        # print("Fasta文件中不包含reference: %s, 程序退出" % ref_id)
+        print("No reference in Fasta file: %s, Program exit" % ref_id)
         sys.exit(1)
     else:
         for seqrecord in tqdm(SeqIO.parse(fasta_file, "fasta"), desc="Virus"):

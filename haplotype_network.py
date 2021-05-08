@@ -101,9 +101,16 @@ def batch_haplotype_network(in_dir: str):
         输出在同一目录，包括node文件，和net文件
         对所有频率阈值生成node文件，仅对无过滤的all生成net文件
     '''
+    '''
+    Generate haplotypes in batches, and generate haplotypes according to all. 
+    The network input directory includes pi_pos FASTA files, 
+    and the freq files are output in the same directory, including node files, and net files. 
+    Generate node files for all frequency thresholds, only for all without filtering net file 
+    '''
     for infile in os.listdir(in_dir):
         if infile.startswith("pi_pos"):
-            print("正在计算文件%s" % infile)
+            # print("正在计算文件%s" % infile)
+            print("Calculating file %s" % infile)
             pi_pos_file = os.path.join(in_dir, infile)
             freq_file = re.sub(r'pi_pos_(.*?).fasta', r'freq_\1.txt', pi_pos_file)
             if infile.find("all") != -1:
@@ -113,7 +120,8 @@ def batch_haplotype_network(in_dir: str):
 
 
 def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
-    print("生成pattern列表")
+    # print("生成pattern列表")
+    print("Generate a list of patterns")
     seqs = {}
     seq_count = 0
     seqrecords = SeqIO.parse(pi_pos_file, "fasta")
@@ -128,7 +136,8 @@ def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
 
     init_freq(freq_file)
 
-    print("生成nodes文件")
+    # print("生成nodes文件")
+    print("Generate nodes file")
     seqss = list(seqs)
     seqindex = []
     for i in range(len(seqss[0])):
@@ -143,7 +152,8 @@ def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
     nodes_file.close()
 
     if draw_net:
-        print("计算海明距离矩阵")
+        # print("计算海明距离矩阵")
+        print("Calculate the Hamming distance matrix")
         # df_distance = pd.DataFrame(np.zeros([len(seqss), len(seqss)], dtype=int), index=seqss, columns=seqss)
         # df_max_maf = pd.DataFrame(np.zeros([len(seqss), len(seqss)], dtype=float), index=seqss, columns=seqss)
         # df_diff = pd.DataFrame(np.empty([len(seqss), len(seqss)], dtype=str), index=seqss, columns=seqss)
@@ -162,7 +172,8 @@ def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
         p.close()
         p.join()
 
-        print("生成候选link列表")
+        # print("生成候选link列表")
+        print("Generate a list of candidate links")
         node_list = []
         # for i in tqdm(range(len(df_distance.index)), desc="line"):
         #     for j in range(len(df_distance.columns)):
@@ -176,10 +187,12 @@ def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
                 node_list.append([int(splitline[0]) + 1, int(splitline[1]) + 1, int(splitline[2]), float(splitline[3]),
                                   splitline[4]])
 
-        print("候选link排序")
+        # print("候选link排序")
+        print("Candidate link ranking")
         node_list.sort(key=lambda x: (x[2], x[3]))
 
-        print("生成网络")
+        # print("生成网络")
+        print("Generate network")
         net_list = []
         max_length = len(seqss)
         added_nodes = set()
