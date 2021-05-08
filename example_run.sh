@@ -1,5 +1,5 @@
 #!/bin/bash
-PY=python3
+PY=../pypy3.7-v7.3.4-linux64/bin/pypy
 
 # Part 1
 echo
