@@ -125,6 +125,7 @@ def write_pis(alignment, all_pis, pos_fa):
     #生成一个长度和alignment结果各条序列长度一致，且sites位点为1。其他位点为0的向量
     pos_boolean = np.zeros(len(alignment[0]))
     pos_boolean[all_pis] = 1
+    pos_boolean = list(pos_boolean)
     for n in tqdm(range(0, len(alignment)), desc='Write ePIS into fasta files'):
         pos_seq = ''
         old_seq = alignment[n].seq
