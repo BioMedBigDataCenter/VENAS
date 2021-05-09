@@ -8,9 +8,12 @@
 import os
 import re
 import click
+import time
 import multiprocessing
 from Bio import SeqIO
 from tqdm import tqdm, trange
+import parham
+
 
 valid_nuc = set(["A", "C", "G", "T"])
 pos_freq = {}
@@ -82,9 +85,9 @@ def seq2geno(seq: str, seqindex: list):
 
 def exec_queue(iter: int, seqss: list, poss_freq: dict, out_file: str):
     outfile = open(out_file, "a+")
+    myid = int(multiprocessing.current_process().name.split("-")[1])
     # for i in tqdm(range(len(seqss)), desc=str(iter)):
-    for i in trange(len(seqss), leave=False, desc="H" + str(iter),
-                    position=int(multiprocessing.current_process().name.split("-")[1])):
+    for i in range(len(seqss)):
         if iter < i:
             distance, max_maf, diff = hamming(seqss[iter], seqss[i], poss_freq)
             outfile.write("%d\t%d\t%d\t%f\t%s\n" % (iter, i, distance, max_maf, ",".join(diff)))
@@ -125,6 +128,7 @@ def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
     seqs = {}
     seq_count = 0
     seqrecords = SeqIO.parse(pi_pos_file, "fasta")
+    print(pi_pos_file)
     for seqrecord in seqrecords:
         seq_count += 1
         # seqs.add(str(seqrecord.seq).upper())
@@ -154,6 +158,7 @@ def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
     if draw_net:
         # print("计算海明距离矩阵")
         print("Calculate the Hamming distance matrix")
+        print('len seqss is {} x {}'.format(len(seqss), len(seqss[0])))
         # df_distance = pd.DataFrame(np.zeros([len(seqss), len(seqss)], dtype=int), index=seqss, columns=seqss)
         # df_max_maf = pd.DataFrame(np.zeros([len(seqss), len(seqss)], dtype=float), index=seqss, columns=seqss)
         # df_diff = pd.DataFrame(np.empty([len(seqss), len(seqss)], dtype=str), index=seqss, columns=seqss)
@@ -164,13 +169,21 @@ def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
         tempfile = os.path.join(os.path.dirname(pi_pos_file), "candidate_links.txt")
         if os.path.exists(tempfile):
             os.remove(tempfile)
-        p = multiprocessing.Pool(multiprocessing.cpu_count(), initializer=tqdm.set_lock,
-                                 initargs=(multiprocessing.RLock(),))
-        # p = multiprocessing.Pool(multiprocessing.cpu_count())
-        for i in range(len(seqss)):
-            p.apply_async(exec_queue, args=(i, seqss, pos_freq, tempfile))
-        p.close()
-        p.join()
+        t_beg = time.time()
+        if os.environ.get('NO_PARHAM') != '1':
+            parham.compute_hamming_matrix(seqss, pos_freq, tempfile)
+        else:
+            print('Not using parham. You might be super slow!')
+            # Original implementation
+            p = multiprocessing.Pool(8, initializer=tqdm.set_lock,
+                                     initargs=(multiprocessing.RLock(),))
+            # p = multiprocessing.Pool(multiprocessing.cpu_count())
+            for i in range(len(seqss)):
+                p.apply(exec_queue, args=(i, seqss, pos_freq, tempfile))
+            p.close()
+            p.join()
+        t_end = time.time()
+        print('Elapsed time {} s'.format(t_end - t_beg))
 
         # print("生成候选link列表")
         print("Generate a list of candidate links")
