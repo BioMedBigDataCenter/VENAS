@@ -1,3 +1,12 @@
+r'''
+This file takes pi_pos_all.fasta as input, and writes to stdout.
+You should manuall redirect the stdout to a file, and use it to replace the 
+original pi_pos_all.fasta file.
+Backup of the input is recomended.
+
+Set the `target` variable at the end of the code to generate different number 
+of input sequences.
+'''
 import random
 
 
