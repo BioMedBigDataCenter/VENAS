@@ -46,38 +46,42 @@ void hamming(size_t length, const char *seq1, const char *seq2, const double *po
 	}
 }
 
+void idx2ij(size_t idx, size_t n_seq, size_t& i, size_t& j) {
+	i = idx / n_seq;
+	j = idx % n_seq;
+	if (i >= j) {
+		i = n_seq - i - 2;
+		j = j + i + 1;
+	}
+}
+
 extern "C" {
 void compute_hamming_matrix(
 		size_t n_seq, size_t seq_len,
 		char* seqss, double* poss_freq,
-		char* freq_file, const char* out_file) {
+		const char* out_file) {
 	int* dis = new int[n_seq * n_seq];
 	double* mmf = new double[n_seq * n_seq];
 	string* strs = new string[n_seq * n_seq];
-#pragma omp parallel for collapse(2)
-	for (size_t i = 0; i < n_seq; ++i) {
-		for (size_t j = 0; j < n_seq; ++j) {
-			if (j < i) {
-				size_t my_idx = (i + 1) * i / 2 + j;
-				hamming(seq_len, 
-						seqss + i * seq_len, 
-						seqss + j * seq_len, 
-						poss_freq,
-						dis + my_idx,
-						mmf + my_idx,
-						strs + my_idx);
-			}
-		}
+	int n_tasks = (n_seq - 1) * n_seq / 2;
+#pragma omp parallel for
+	for (size_t idx = 0; idx < n_tasks; ++idx) {
+		size_t i, j;
+		idx2ij(idx, n_seq, i, j);
+		hamming(seq_len, 
+				seqss + i * seq_len, 
+				seqss + j * seq_len, 
+				poss_freq,
+				dis + idx,
+				mmf + idx,
+				strs + idx);
 	}
 	FILE* ouf = fopen(out_file, "w");
-	for (size_t i = 0; i < n_seq; ++i) {
-		for (size_t j = 0; j < n_seq; ++j) {
-			if (j < i) {
-				size_t my_idx = (i + 1) * i / 2 + j;
-				fprintf(ouf, "%d\t%d\t%d\t%f\t%s\n", i, j, dis[my_idx], 
-						mmf[my_idx], strs[my_idx]);
-			}
-		}
+	for (size_t idx = 0; idx < n_tasks; ++idx) {
+		size_t i, j;
+		idx2ij(idx, n_seq, i, j);
+		fprintf(ouf, "%d\t%d\t%d\t%f\t%s\n", i, j, dis[idx], 
+				mmf[idx], strs[idx].c_str());
 	}
 	fclose(ouf);
 }

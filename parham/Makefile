@@ -1,4 +1,4 @@
 default : libparham.so
 
 lib%.so : %.cc
-	g++ -fopenmp $< -shared -fPIC -o $@
+	g++ -g -O3 -fopenmp $< -shared -fPIC -o $@
