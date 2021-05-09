@@ -127,7 +127,7 @@ void compute_hamming_matrix(
 		fclose(ouf);
 	}
 	if (net_file) {
-        puts("候选link排序");
+        puts("Generate a list of candidate links");
 		int* idxs = new int[n_tasks];
 		size_t n_clades = 0;
 		for (int i = 0; i < n_tasks; ++i) {
@@ -135,7 +135,7 @@ void compute_hamming_matrix(
 		}
 		g_n_seq = n_seq;
 		sort(idxs, idxs + n_tasks, cmp_idx);
-        puts("生成网络");
+        puts("Candidate link ranking");
 		vector<int> net_list;
 		set<int> added_nodes;
 		dsr = new int[n_seq];
