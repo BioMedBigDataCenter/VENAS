@@ -170,8 +170,18 @@ def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
         if os.path.exists(tempfile):
             os.remove(tempfile)
         t_beg = time.time()
-        if os.environ.get('NO_PARHAM') != '1':
-            parham.compute_hamming_matrix(seqss, pos_freq, tempfile)
+        parham_mode = os.environ.get('PARHAM_MODE', 'FULL')
+        if parham_mode != 'OFF':
+            out_file = tempfile
+            net_file = re.sub(r'pi_pos_(.*?).fasta', r'net_\1.txt', pi_pos_file)
+            if parham_mode == 'N2_LOOP_ONLY':
+                net_file = None
+            elif parham_mode != 'FULL_WITH_CAND':
+                out_file = None
+            parham.compute_hamming_matrix(seqss, pos_freq, pos_ref,
+                    out_file, net_file)
+            if parham_mode.startswith('FULL'):
+                return
         else:
             print('Not using parham. You might be super slow!')
             # Original implementation
