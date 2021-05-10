@@ -100,10 +100,11 @@ void compute_hamming_matrix(
 		char* seqss, double* poss_freq, int* poss_ref,
 		const char* out_file, const char* net_file) {
 	g_posref = poss_ref;
-	dis = new int[n_seq * n_seq];
-	mmf = new double[n_seq * n_seq];
-	strs = new string[n_seq * n_seq];
 	int n_tasks = (n_seq - 1) * n_seq / 2;
+	dis = new int[n_tasks];
+	mmf = new double[n_tasks];
+	strs = new string[n_tasks];
+
 #pragma omp parallel for
 	for (size_t idx = 0; idx < n_tasks; ++idx) {
 		size_t i, j;
@@ -201,8 +202,11 @@ void compute_hamming_matrix(
 			fprintf(ouf, "\n");
 		}
 		fclose(ouf);
+		delete[] idxs;
+		delete[] dsr;
 	}
-	delete dis;
-	delete mmf;
+	delete[] dis;
+	delete[] mmf;
+	delete[] strs;
 }
 };
