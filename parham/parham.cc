@@ -122,7 +122,7 @@ void compute_hamming_matrix(
 		for (size_t idx = 0; idx < n_tasks; ++idx) {
 			size_t i, j;
 			idx2ij(idx, n_seq, i, j);
-			fprintf(ouf, "%d\t%d\t%d\t%f\t%s\n", i, j, dis[idx], 
+			fprintf(ouf, "%lu\t%lu\t%d\t%f\t%s\n", i, j, dis[idx], 
 					mmf[idx], strs[idx].c_str());
 		}
 		fclose(ouf);
@@ -187,7 +187,7 @@ void compute_hamming_matrix(
 				diff.push_back(difv);
 			}
 			sort(diff.begin(), diff.end(), cmp_posref);
-			fprintf(ouf, "%lu\t%lu\t%lu\t", i + 1, j + 1, dis[idx]);
+			fprintf(ouf, "%lu\t%lu\t%i\t", i + 1, j + 1, dis[idx]);
 			bool is_first = true;
 			for (auto posi : diff) {
 				if (is_first) {

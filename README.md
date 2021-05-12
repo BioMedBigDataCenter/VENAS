@@ -15,10 +15,17 @@ VENAS can construct the network from an alignment file containing 10k sequences 
 VENAS requires python 3 with PyPy, argparse, pandas, numpy (<http://www.numpy.org/>), networkx(version=2.5), CDlib, matplotlib, biopython (<http://biopython.org/wiki/Main_Page>), click, tqdm libraries installed.
 If you want to provide a fasta file as input file, VENAS also needs the MAFFT (<https://mafft.cbrc.jp/alignment/software/>) in the executable path. Then you can use the “multi_mafft.py” to perform a multi-threaded multiple sequence alignment.
 
+You will also need `make` and `gcc` with C++17 support in order to compile the parallel implementation for `haplotype_network.py` (see **Part2**).
+
 ## Installation
 Cloning the repository via the following commands 
 ```
 $ git clone https://github.com/qianjiaqiang/VENAS.git
+```
+
+Build the shared library
+```
+$ cd parham && make && cd ..
 ```
 
 ## Basic Usage
