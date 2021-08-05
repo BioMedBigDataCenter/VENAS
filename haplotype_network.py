@@ -8,9 +8,12 @@
 import os
 import re
 import click
+import time
 import multiprocessing
 from Bio import SeqIO
 from tqdm import tqdm, trange
+import parham
+
 
 valid_nuc = set(["A", "C", "G", "T"])
 pos_freq = {}
@@ -82,9 +85,9 @@ def seq2geno(seq: str, seqindex: list):
 
 def exec_queue(iter: int, seqss: list, poss_freq: dict, out_file: str):
     outfile = open(out_file, "a+")
+    myid = int(multiprocessing.current_process().name.split("-")[1])
     # for i in tqdm(range(len(seqss)), desc=str(iter)):
-    for i in trange(len(seqss), leave=False, desc="H" + str(iter),
-                    position=int(multiprocessing.current_process().name.split("-")[1])):
+    for i in range(len(seqss)):
         if iter < i:
             distance, max_maf, diff = hamming(seqss[iter], seqss[i], poss_freq)
             outfile.write("%d\t%d\t%d\t%f\t%s\n" % (iter, i, distance, max_maf, ",".join(diff)))
@@ -101,9 +104,16 @@ def batch_haplotype_network(in_dir: str):
         输出在同一目录，包括node文件，和net文件
         对所有频率阈值生成node文件，仅对无过滤的all生成net文件
     '''
+    '''
+    Generate haplotypes in batches, and generate haplotypes according to all. 
+    The network input directory includes pi_pos FASTA files, 
+    and the freq files are output in the same directory, including node files, and net files. 
+    Generate node files for all frequency thresholds, only for all without filtering net file 
+    '''
     for infile in os.listdir(in_dir):
         if infile.startswith("pi_pos"):
-            print("正在计算文件%s" % infile)
+            # print("正在计算文件%s" % infile)
+            print("Calculating file %s" % infile)
             pi_pos_file = os.path.join(in_dir, infile)
             freq_file = re.sub(r'pi_pos_(.*?).fasta', r'freq_\1.txt', pi_pos_file)
             if infile.find("all") != -1:
@@ -113,10 +123,12 @@ def batch_haplotype_network(in_dir: str):
 
 
 def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
-    print("生成pattern列表")
+    # print("生成pattern列表")
+    print("Generate a list of patterns")
     seqs = {}
     seq_count = 0
     seqrecords = SeqIO.parse(pi_pos_file, "fasta")
+    print(pi_pos_file)
     for seqrecord in seqrecords:
         seq_count += 1
         # seqs.add(str(seqrecord.seq).upper())
@@ -128,7 +140,8 @@ def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
 
     init_freq(freq_file)
 
-    print("生成nodes文件")
+    # print("生成nodes文件")
+    print("Generate nodes file")
     seqss = list(seqs)
     seqindex = []
     for i in range(len(seqss[0])):
@@ -143,7 +156,9 @@ def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
     nodes_file.close()
 
     if draw_net:
-        print("计算海明距离矩阵")
+        # print("计算海明距离矩阵")
+        print("Calculate the Hamming distance matrix")
+        print('len seqss is {} x {}'.format(len(seqss), len(seqss[0])))
         # df_distance = pd.DataFrame(np.zeros([len(seqss), len(seqss)], dtype=int), index=seqss, columns=seqss)
         # df_max_maf = pd.DataFrame(np.zeros([len(seqss), len(seqss)], dtype=float), index=seqss, columns=seqss)
         # df_diff = pd.DataFrame(np.empty([len(seqss), len(seqss)], dtype=str), index=seqss, columns=seqss)
@@ -154,15 +169,34 @@ def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
         tempfile = os.path.join(os.path.dirname(pi_pos_file), "candidate_links.txt")
         if os.path.exists(tempfile):
             os.remove(tempfile)
-        p = multiprocessing.Pool(multiprocessing.cpu_count(), initializer=tqdm.set_lock,
-                                 initargs=(multiprocessing.RLock(),))
-        # p = multiprocessing.Pool(multiprocessing.cpu_count())
-        for i in range(len(seqss)):
-            p.apply_async(exec_queue, args=(i, seqss, pos_freq, tempfile))
-        p.close()
-        p.join()
+        t_beg = time.time()
+        parham_mode = os.environ.get('PARHAM_MODE', 'FULL')
+        if parham_mode != 'OFF':
+            out_file = tempfile
+            net_file = re.sub(r'pi_pos_(.*?).fasta', r'net_\1.txt', pi_pos_file)
+            if parham_mode == 'N2_LOOP_ONLY':
+                net_file = None
+            elif parham_mode != 'FULL_WITH_CAND':
+                out_file = None
+            parham.compute_hamming_matrix(seqss, pos_freq, pos_ref,
+                    out_file, net_file)
+            if parham_mode.startswith('FULL'):
+                return
+        else:
+            print('Not using parham. You might be super slow!')
+            # Original implementation
+            p = multiprocessing.Pool(8, initializer=tqdm.set_lock,
+                                     initargs=(multiprocessing.RLock(),))
+            # p = multiprocessing.Pool(multiprocessing.cpu_count())
+            for i in range(len(seqss)):
+                p.apply(exec_queue, args=(i, seqss, pos_freq, tempfile))
+            p.close()
+            p.join()
+        t_end = time.time()
+        print('Elapsed time {} s'.format(t_end - t_beg))
 
-        print("生成候选link列表")
+        # print("生成候选link列表")
+        print("Generate a list of candidate links")
         node_list = []
         # for i in tqdm(range(len(df_distance.index)), desc="line"):
         #     for j in range(len(df_distance.columns)):
@@ -176,10 +210,12 @@ def haplotype_network(pi_pos_file: str, freq_file: str, draw_net: bool):
                 node_list.append([int(splitline[0]) + 1, int(splitline[1]) + 1, int(splitline[2]), float(splitline[3]),
                                   splitline[4]])
 
-        print("候选link排序")
+        # print("候选link排序")
+        print("Candidate link ranking")
         node_list.sort(key=lambda x: (x[2], x[3]))
 
-        print("生成网络")
+        # print("生成网络")
+        print("Generate network")
         net_list = []
         max_length = len(seqss)
         added_nodes = set()
