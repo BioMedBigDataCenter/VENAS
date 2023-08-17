@@ -103,8 +103,8 @@ python main_path_example.py
 The result net.csv and nodeTable.csv files are in the current working directory. You can visualize the result viral genome evolution network using a general relationship graph or force-directed graph tools, such as the web-based Apache Echarts (<https://echarts.apache.org/>), d3.js (<https://d3js.org/>), or the application-based Gephi (recommend).
 
 ## Publication
-Y. Ling, R. Cao, J. Qian et al., An interactive viral genome evolution network analysis system enabling rapid large-scale molecular
-tracing of SARS-CoV-2, Science Bulletin, (<https://doi.org/10.1016/j.scib.2022.01.001>)
+Y. Ling, R. Cao, J. Qian et al. An interactive viral genome evolution network analysis system enabling rapid large-scale molecular
+tracing of SARS-CoV-2, Science Bulletin 2022, 67(7):665-669. [<https://doi.org/10.1016/j.scib.2022.01.001>]
 ## About Us
 
-Bio-Med Big Data Center, CAS Key Laboratory of Computational Biology, CAS-MPG Partner Institute for Computational Biology, Shanghai Institute of Nutrition and Health, Chinese Academy of Sciences
+Bio-Med Big Data Center, CAS Key Laboratory of Computational Biology, Shanghai Institute of Nutrition and Health, Chinese Academy of Sciences.
